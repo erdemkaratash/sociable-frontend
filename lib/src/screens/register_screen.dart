@@ -16,10 +16,10 @@ class RegisterScreen extends StatelessWidget {
       colorScheme: ColorScheme.dark().copyWith(secondary: Colors.grey[600]),
       scaffoldBackgroundColor: Colors.grey[900],
       textTheme: ThemeData.dark().textTheme.copyWith(
-        bodyText1: TextStyle(fontFamily: 'Montserrat'),
-        bodyText2: TextStyle(fontFamily: 'Montserrat'),
-        headline6: TextStyle(fontFamily: 'Montserrat'),
-      ),
+            bodyText1: TextStyle(fontFamily: 'Montserrat'),
+            bodyText2: TextStyle(fontFamily: 'Montserrat'),
+            headline6: TextStyle(fontFamily: 'Montserrat'),
+          ),
     );
 
     return Theme(
@@ -83,9 +83,11 @@ class RegisterScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     primary: Colors.grey[800],
                     onPrimary: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32.0)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0)),
                   ),
-                  child: Text('Register', style: TextStyle(fontFamily: 'Montserrat')),
+                  child: Text('Register',
+                      style: TextStyle(fontFamily: 'Montserrat')),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       Provider.of<Auth>(context, listen: false).register(

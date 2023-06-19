@@ -35,6 +35,9 @@ dependencies:
   jwt_decoder: ^2.0.1 # For decoding JWT
   shared_preferences: ^2.0.8 # For persisting user data on device
   google_fonts: ^2.1.0
+  firebase_storage: ^10.0.1 #latest version
+  image_picker: ^0.8.4+2 #latest version
+  cloud_firestore: ^3.0.1 #latest version
 
 
   # The following adds the Cupertino Icons font to your application.

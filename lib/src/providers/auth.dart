@@ -12,7 +12,7 @@ class Auth with ChangeNotifier {
 
   Future<void> register(String username, String password) async {
     final response = await http.post(
-      Uri.http('localhost:5001', 'api/user/register'),
+      Uri.http('localhost:5001', '/register'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -34,7 +34,7 @@ class Auth with ChangeNotifier {
 
   Future<bool> login(String username, String password) async {
     final response = await http.post(
-      Uri.http('localhost:5001', 'api/user/login'),
+      Uri.http('localhost:5001', '/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -60,7 +60,7 @@ class Auth with ChangeNotifier {
     if (_user != null) {
       print(user!.id + newUsername);
       final response = await http.post(
-        Uri.parse('http://localhost:5000/updateUsername'),
+        Uri.parse('http://localhost:5001/updateUsername'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
