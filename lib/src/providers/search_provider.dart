@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:socialize_backend/src/models/user.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+String api_url = dotenv.env['API_URL']!;
 
 class SearchProvider {
   Future<List<User>> searchUser(String username) async {
     final response = await http.get(
-      Uri.http('localhost:5000', '/search', {'username': username}),
+      Uri.http(api_url, '/search', {'username': username}),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

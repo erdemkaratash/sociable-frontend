@@ -1,12 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth.dart';
+import 'package:socialize_backend/src/providers/auth.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   static const routeName = '/register';
-  final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+
+  @override
+  _RegisterScreenState createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey();
+  String _username = '';
+  String _password = '';
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
+    try {
+      final bool isLoginSuccessful =
+          await Provider.of<Auth>(context, listen: false)
+              .register(_username, _password);
+
+      if (isLoginSuccessful) {
+        // Show an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('You are succesfully registered!'),
+          ),
+        );
+      } else {
+        // Show an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration failed!'),
+          ),
+        );
+      }
+    } catch (error) {
+      var errorMessage = 'Could not authenticate you. Please try again later.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +57,10 @@ class RegisterScreen extends StatelessWidget {
       colorScheme: ColorScheme.dark().copyWith(secondary: Colors.grey[600]),
       scaffoldBackgroundColor: Colors.grey[900],
       textTheme: ThemeData.dark().textTheme.copyWith(
-        bodyText1: TextStyle(fontFamily: 'Montserrat'),
-        bodyText2: TextStyle(fontFamily: 'Montserrat'),
-        headline6: TextStyle(fontFamily: 'Montserrat'),
-      ),
+            bodyText1: TextStyle(fontFamily: 'Montserrat'),
+            bodyText2: TextStyle(fontFamily: 'Montserrat'),
+            headline6: TextStyle(fontFamily: 'Montserrat'),
+          ),
     );
 
     return Theme(
@@ -29,75 +70,83 @@ class RegisterScreen extends StatelessWidget {
           title: Text('Register', style: TextStyle(fontFamily: 'Montserrat')),
           backgroundColor: Colors.grey[900],
         ),
-        body: Form(
-          key: _formKey,
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                TextFormField(
-                  style: TextStyle(fontFamily: 'Montserrat'),
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    labelStyle: TextStyle(fontFamily: 'Montserrat'),
-                    filled: true,
-                    fillColor: Colors.grey[800],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0),
-                      borderSide: BorderSide.none,
+        body: Stack(
+          children: <Widget>[
+            Center(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Username',
+                            labelStyle: TextStyle(fontFamily: 'Montserrat'),
+                            filled: true,
+                            fillColor: Colors.grey[800],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          keyboardType: TextInputType.text,
+                          style: TextStyle(fontFamily: 'Montserrat'),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter your username';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _username = value!;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(fontFamily: 'Montserrat'),
+                            filled: true,
+                            fillColor: Colors.grey[800],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          obscureText: true,
+                          style: TextStyle(fontFamily: 'Montserrat'),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _password = value!;
+                          },
+                        ),
+                        SizedBox(height: 30),
+                        ElevatedButton(
+                          child: Text('Register',
+                              style: TextStyle(fontFamily: 'Montserrat')),
+                          onPressed: _submit,
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.grey[800],
+                            onPrimary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(32.0)),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a username.';
-                    }
-                    return null;
-                  },
                 ),
-                SizedBox(height: 20),
-                TextFormField(
-                  style: TextStyle(fontFamily: 'Montserrat'),
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    labelStyle: TextStyle(fontFamily: 'Montserrat'),
-                    filled: true,
-                    fillColor: Colors.grey[800],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password.';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.grey[800],
-                    onPrimary: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32.0)),
-                  ),
-                  child: Text('Register', style: TextStyle(fontFamily: 'Montserrat')),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Provider.of<Auth>(context, listen: false).register(
-                        _usernameController.text,
-                        _passwordController.text,
-                      );
-                    }
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
