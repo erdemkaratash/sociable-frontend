@@ -12,11 +12,11 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _newUsernameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    _usernameController.text = Provider.of<Auth>(context).user.username;
+    _newUsernameController.text = Provider.of<Auth>(context).user.username;
 
     return Scaffold(
       body: Center(
@@ -29,7 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   TextFormField(
-                    controller: _usernameController,
+                    controller: _newUsernameController,
                     decoration: InputDecoration(
                       labelText: 'Username',
                       labelStyle: TextStyle(fontFamily: 'Montserrat'),
@@ -56,7 +56,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       if (_formKey.currentState!.validate()) {
                         bool success =
                             await Provider.of<Auth>(context, listen: false)
-                                .updateUsername(_usernameController.text);
+                                .updateUsername(_newUsernameController.text);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(success

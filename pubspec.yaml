@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.1  # State management
-  http: ^0.13.3     # HTTP requests
+  http: ^0.13.6     # HTTP requests
   jwt_decoder: ^2.0.1 # For decoding JWT
   shared_preferences: ^2.0.8 # For persisting user data on device
   google_fonts: ^2.1.0
@@ -41,6 +41,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   flutter_dotenv: ^5.1.0
+  image_picker: ^0.8.9
+  mime: ^1.0.4
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:

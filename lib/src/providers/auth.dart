@@ -61,25 +61,35 @@ class Auth with ChangeNotifier {
 
   Future<bool> updateUsername(String newUsername) async {
     if (_user != null) {
-      print(_user!.id + newUsername);
-      print(_user!.token);
-      final response = await http.post(
-        Uri.http(api_url, 'api/user/update'),
-        headers: {
-          HttpHeaders.authorizationHeader: '${_user!.token}',
-        },
-        body: jsonEncode(<String, String>{
-          'username': newUsername,
-        }),
-      );
+      try {
+        print(_user!.id + newUsername);
+        print(_user!.token);
 
-      if (response.statusCode == 200) {
-        print(response.body);
-        _user = User.fromJson(jsonDecode(response.body));
-        notifyListeners();
-        return true;
-      } else {
-        print(response.statusCode);
+        final response = await http.put(
+          Uri.http(api_url, 'api/user/update'),
+          headers: {
+            HttpHeaders.authorizationHeader: _user!.token,
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, String>{
+            'username': newUsername,
+          }),
+        );
+
+        print('Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          print(response.body);
+          _user = User.fromJson(jsonDecode(response.body));
+          notifyListeners();
+          return true;
+        } else {
+          print(response.statusCode);
+          return false;
+        }
+      } catch (error) {
+        print('An error occurred: $error');
         return false;
       }
     }
