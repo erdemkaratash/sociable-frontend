@@ -59,6 +59,33 @@ class Auth with ChangeNotifier {
     }
   }
 
+  // Inside Auth class in auth.dart
+  Future<List<User>> searchUser(String username) async {
+    try {
+      final response = await http.post(
+        Uri.http(api_url, 'api/user/search'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'username': username,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        Iterable iterable = jsonDecode(response.body);
+        List<User> users =
+            List<User>.from(iterable.map((model) => User.fromJson(model)));
+        return users;
+      } else {
+        throw Exception('Failed to load users');
+      }
+    } catch (error) {
+      print('An error occurred while searching users: $error');
+      throw error; // re-throw the error
+    }
+  }
+
   Future<bool> updateUsername(String newUsername) async {
     if (_user != null) {
       try {

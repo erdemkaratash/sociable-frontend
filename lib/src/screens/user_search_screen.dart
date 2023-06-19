@@ -1,62 +1,76 @@
 import 'package:flutter/material.dart';
-import 'package:socialize_backend/src/providers/search_provider.dart';
-import 'package:socialize_backend/src/screens/profile_screen.dart';
-import 'package:socialize_backend/src/models/user.dart';
+import 'package:provider/provider.dart';
+import '../models/user.dart';
+import '../providers/auth.dart';
 
-class UserSearch extends StatefulWidget {
+class UserSearchScreen extends StatefulWidget {
   @override
-  _UserSearchState createState() => _UserSearchState();
+  _UserSearchScreenState createState() => _UserSearchScreenState();
 }
 
-class _UserSearchState extends State<UserSearch> {
-  final _searchController = TextEditingController();
-  List<User> _searchResults = [];
+class _UserSearchScreenState extends State<UserSearchScreen> {
+  final _usernameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  List<User> _users = [];
 
   void _searchUser() async {
-    final enteredUsername = _searchController.text;
-    try {
-      _searchResults = await SearchProvider().searchUser(enteredUsername);
-      setState(() {});
-    } catch (error) {
-      print('Failed to search user: $error');
+    if (_formKey.currentState!.validate()) {
+      try {
+        List<User> users = await Provider.of<Auth>(context, listen: false)
+            .searchUser(_usernameController.text);
+        setState(() {
+          _users = users;
+        });
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred!'),
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: TextField(
-              controller: _searchController,
-              onSubmitted: (_) => _searchUser(),
-              decoration: InputDecoration(
-                labelText: 'Search Username',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: _searchUser,
+      appBar: AppBar(
+        title: Text('Search User'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
                 ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _searchResults.length,
-              itemBuilder: (ctx, i) => ListTile(
-                title: Text(_searchResults[i].username),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ProfileScreen(username: _searchResults[i].username),
-                    ),
-                  );
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a username.';
+                  }
+                  return null;
                 },
               ),
             ),
-          ),
-        ],
+            ElevatedButton(
+              child: Text('Search'),
+              onPressed: _searchUser,
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _users.length,
+                itemBuilder: (ctx, index) => ListTile(
+                  title: Text(_users[index].username),
+                  // Add more details of users as needed
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

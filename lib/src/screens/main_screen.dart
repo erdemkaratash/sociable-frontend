@@ -13,7 +13,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
-    UserSearch(),
+    UserSearchScreen(),
     EditProfileScreen(),
   ];
 
@@ -30,10 +30,10 @@ class _MainScreenState extends State<MainScreen> {
       primarySwatch: Colors.grey,
       scaffoldBackgroundColor: Colors.grey[900],
       textTheme: ThemeData.dark().textTheme.copyWith(
-        bodyText1: TextStyle(fontFamily: 'Montserrat'),
-        bodyText2: TextStyle(fontFamily: 'Montserrat'),
-        headline6: TextStyle(fontFamily: 'Montserrat'),
-      ),
+            bodyText1: TextStyle(fontFamily: 'Montserrat'),
+            bodyText2: TextStyle(fontFamily: 'Montserrat'),
+            headline6: TextStyle(fontFamily: 'Montserrat'),
+          ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: Colors.grey[900],
         selectedItemColor: Colors.white,
@@ -45,7 +45,8 @@ class _MainScreenState extends State<MainScreen> {
       data: _darkTheme,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Main Screen', style: TextStyle(fontFamily: 'Montserrat')),
+          title: const Text('Main Screen',
+              style: TextStyle(fontFamily: 'Montserrat')),
           backgroundColor: Colors.grey[900],
         ),
         body: _pages[_selectedIndex],
