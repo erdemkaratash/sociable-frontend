@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/user.dart';
@@ -48,8 +49,9 @@ class Auth with ChangeNotifier {
       }),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       print(response.body);
+      _user = User.fromJson(jsonDecode(response.body));
       return true;
     } else {
       print(response.statusCode);
@@ -57,26 +59,30 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> updateUsername(String newUsername) async {
+  Future<bool> updateUsername(String newUsername) async {
     if (_user != null) {
-      print(user!.id + newUsername);
+      print(_user!.id + newUsername);
+      print(_user!.token);
       final response = await http.post(
-        Uri.http(api_url, 'api/user/login'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+        Uri.http(api_url, 'api/user/update'),
+        headers: {
+          HttpHeaders.authorizationHeader: '${_user!.token}',
         },
         body: jsonEncode(<String, String>{
-          'userId': _user!.id,
           'username': newUsername,
         }),
       );
 
       if (response.statusCode == 200) {
+        print(response.body);
         _user = User.fromJson(jsonDecode(response.body));
         notifyListeners();
+        return true;
       } else {
-        throw Exception('Failed to update username.');
+        print(response.statusCode);
+        return false;
       }
     }
+    return false; // Default return value
   }
 }

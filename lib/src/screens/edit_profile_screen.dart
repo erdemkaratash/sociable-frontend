@@ -50,16 +50,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    child: Text('Update Username', style: TextStyle(fontFamily: 'Montserrat')),
-                    onPressed: () {
+                    child: Text('Update Username',
+                        style: TextStyle(fontFamily: 'Montserrat')),
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        Provider.of<Auth>(context, listen: false).updateUsername(_usernameController.text);
+                        bool success =
+                            await Provider.of<Auth>(context, listen: false)
+                                .updateUsername(_usernameController.text);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(success
+                                ? 'Update successful'
+                                : 'Update failed'),
+                          ),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Colors.grey[800],
                       onPrimary: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32.0)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0)),
                     ),
                   ),
                 ],

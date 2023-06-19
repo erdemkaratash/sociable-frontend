@@ -15,7 +15,7 @@ class User {
     final Map<String, dynamic> decodedToken = JwtDecoder.decode(json['token']);
 
     return User(
-      id: decodedToken['_id'],
+      id: decodedToken['id'],
       username: json['username'],
       token: json['token'],
     );
