@@ -15,7 +15,7 @@ class Auth with ChangeNotifier {
 
   Future<bool> register(String username, String password) async {
     final response = await http.post(
-      Uri.http(api_url, 'api/user/login'),
+      Uri.http(api_url, 'api/user/register'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -25,9 +25,8 @@ class Auth with ChangeNotifier {
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       print(response.body);
-      _user = User.fromJson(jsonDecode(response.body));
       // Return true for successful login
       return true;
     } else {
@@ -49,13 +48,10 @@ class Auth with ChangeNotifier {
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       print(response.body);
-      _user = User.fromJson(jsonDecode(response.body));
-      // Return true for successful login
       return true;
     } else {
-      // Return false for unsuccessful login
       print(response.statusCode);
       return false;
     }
