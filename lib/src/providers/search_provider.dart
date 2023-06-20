@@ -8,7 +8,7 @@ String api_url = dotenv.env['API_URL']!;
 class SearchProvider {
   Future<List<User>> searchUser(String username) async {
     final response = await http.get(
-      Uri.http(api_url, '/search', {'username': username}),
+      Uri.http(api_url, '/api/user/findUser', {'username': username}),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -29,4 +29,43 @@ class SearchProvider {
       throw Exception('Failed to search user.');
     }
   }
+
+  
+
+// Add this method within your Auth class.
+
+Future<User?> findUser(String username) async {
+  try {
+    final response = await http.get(
+      Uri.http(api_url, 'api/user/findUser', {'username': username}),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        // Add authorization headers if required
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      if (jsonResponse.containsKey('_id')) {
+        // Assuming token is not provided, you can set it to an empty string
+        // or handle it appropriately based on your use case.
+        return User(
+          id: jsonResponse['_id'],
+          username: jsonResponse['username'],
+          token: '',
+        );
+      } else {
+        print("User not found");
+        return null;
+      }
+    } else {
+      print("Error retrieving user. Status code: ${response.statusCode}");
+      return null;
+    }
+  } catch (error) {
+    print('An error occurred: $error');
+    return null;
+  }
+}
+
 }
