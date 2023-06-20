@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:socialize_backend/src/providers/search_provider.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth.dart';
 import 'package:socialize_backend/src/screens/profile_screen.dart';
 import 'package:socialize_backend/src/models/user.dart';
 
@@ -10,12 +11,13 @@ class UserSearch extends StatefulWidget {
 
 class _UserSearchState extends State<UserSearch> {
   final _searchController = TextEditingController();
-  List<User> _searchResults = [];
+  User? _searchResult;
 
   void _searchUser() async {
     final enteredUsername = _searchController.text;
     try {
-      _searchResults = await SearchProvider().searchUser(enteredUsername);
+      _searchResult = await Provider.of<Auth>(context, listen: false)
+          .findUser(enteredUsername); // Call findUser from auth.dart
       setState(() {});
     } catch (error) {
       print('Failed to search user: $error');
@@ -41,21 +43,19 @@ class _UserSearchState extends State<UserSearch> {
               ),
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _searchResults.length,
-              itemBuilder: (ctx, i) => ListTile(
-                title: Text(_searchResults[i].username),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ProfileScreen(username: _searchResults[i].username),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
+          _searchResult != null
+              ? ListTile(
+                  title: Text(_searchResult!.username),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            ProfileScreen(username: _searchResult!.username),
+                      ),
+                    );
+                  },
+                )
+              : Container()
         ],
       ),
     );
