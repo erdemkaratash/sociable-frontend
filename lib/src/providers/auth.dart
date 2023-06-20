@@ -50,9 +50,8 @@ class Auth with ChangeNotifier {
     );
 
 
-    print(response.statusCode.runtimeType);
-    if (response.statusCode < 400) {
-      print(response.body);
+    
+    if (response.statusCode == 200) {
       _user = User.fromJson(jsonDecode(response.body));
       return true;
     } else {
@@ -62,39 +61,39 @@ class Auth with ChangeNotifier {
   }
 
   Future<bool> updateUsername(String newUsername) async {
-    if (_user != null) {
-      try {
-        print(_user!.id + newUsername);
-        print(_user!.token);
+  if (_user != null) {
+    try {
+      final response = await http.put(
+        Uri.http(api_url, 'api/user/update'),
+        headers: {
+          HttpHeaders.authorizationHeader: _user!.token,
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'username': newUsername,
+        }),
+      );
 
-        final response = await http.put(
-          Uri.http(api_url, 'api/user/update'),
-          headers: {
-            HttpHeaders.authorizationHeader: _user!.token,
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, String>{
-            'username': newUsername,
-          }),
+      if (response.statusCode == 200) {
+        Map<String, dynamic> updatedUserJson = jsonDecode(response.body);
+        // Create a new User object with the updated fields, but keep the original token.
+        _user = User(
+          id: updatedUserJson['_id'],
+          username: updatedUserJson['username'],
+          token: _user!.token,
         );
-
-        print('Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
-
-        if (response.statusCode == 200) {
-          print(response.body);
-          _user = User.fromJson(jsonDecode(response.body));
-          notifyListeners();
-          return true;
-        } else {
-          print(response.statusCode);
-          return false;
-        }
-      } catch (error) {
-        print('An error occurred: $error');
+        notifyListeners();
+        return true;
+      } else {
+        print(response.statusCode);
         return false;
       }
+    } catch (error) {
+      print('An error occurred: $error');
+      return false;
     }
-    return false; // Default return value
   }
+  return false; // Default return value
+}
+
 }
