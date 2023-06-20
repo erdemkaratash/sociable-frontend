@@ -13,11 +13,13 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     final Map<String, dynamic> decodedToken = JwtDecoder.decode(json['token']);
+    final Map<String, dynamic> userPayload = decodedToken['user'];
 
     return User(
-      id: decodedToken['id'],
+      id: userPayload['id'],
       username: json['username'],
       token: json['token'],
     );
-  }
+}
+
 }

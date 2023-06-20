@@ -49,7 +49,9 @@ class Auth with ChangeNotifier {
       }),
     );
 
-    if (response.statusCode == 200) {
+
+    print(response.statusCode.runtimeType);
+    if (response.statusCode < 400) {
       print(response.body);
       _user = User.fromJson(jsonDecode(response.body));
       return true;
