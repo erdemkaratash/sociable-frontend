@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
-import 'package:socialize_backend/src/screens/profile_screen.dart';
 import 'package:socialize_backend/src/models/user.dart';
 
 class UserSearch extends StatefulWidget {
@@ -17,11 +16,44 @@ class _UserSearchState extends State<UserSearch> {
     final enteredUsername = _searchController.text;
     try {
       _searchResult = await Provider.of<Auth>(context, listen: false)
-          .findUser(enteredUsername); // Call findUser from auth.dart
+          .findUser(enteredUsername);
       setState(() {});
     } catch (error) {
       print('Failed to search user: $error');
     }
+  }
+
+  void _showUserProfile(User user) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: ClipOval(
+          child: FittedBox(
+            child: Image.asset('assets/avatar.jpg', width: 50, height: 50),
+            fit: BoxFit.cover,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(user.username, style: TextStyle(fontSize: 20)),
+            SizedBox(height: 10),
+            ElevatedButton(
+              child: Text('Poke'),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -47,12 +79,7 @@ class _UserSearchState extends State<UserSearch> {
               ? ListTile(
                   title: Text(_searchResult!.username),
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            ProfileScreen(username: _searchResult!.username),
-                      ),
-                    );
+                    _showUserProfile(_searchResult!);
                   },
                 )
               : Container()
